@@ -120,6 +120,7 @@
           this.newReply()
         }
       }
+
     },
     created() {
       this.sectionTo();

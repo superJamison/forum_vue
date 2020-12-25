@@ -1,6 +1,7 @@
 import axios from "axios";
 import Qs from "qs";
 import {use} from 'element-ui/src/locale'
+import el from 'element-ui/src/locale/lang/el'
 
 
 //全局默认配置
@@ -38,4 +39,20 @@ export const getMyProblemPage = (page, limit, id) => {
 //根据id获取question
 export const getQuestionById = questionId => {
   return axios.post("/forum/question/getQuestionById", Qs.stringify({id: questionId}));
+};
+
+//增加浏览量
+export const addViewCount = questionId => {
+  return axios.post("/forum/question/addViewCount", Qs.stringify({id: questionId}));
+};
+
+/**
+ * 添加评论
+ * @param type 类型 1 一级评论  2 二级评论
+ * @param parentId 父id
+ * @param content 评论内容
+ * @returns {Promise<AxiosResponse<any>>}
+ */
+export const addComment = (type, parentId, content) => {
+  return axios.post("/forum/comment/addComment", Qs.stringify({type: type, parentId:parentId, content:content}));
 };

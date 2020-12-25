@@ -41,7 +41,6 @@
       searchTitle: ""
     };
   },
-  components: {},
   methods: {
     //验证是否已经登录过了，如果登录过了就会显用户信息
     isLogin: function () {
@@ -79,11 +78,26 @@
       });
 
 
+    },
+    goBack(){
+      //回退
+      //TODO 默认暂时返回的是首页，但后续要实现的是返回到上一个页面
+      this.$router.replace({path:'/'});
     }
   },
-  created() {
-    this.isLogin();
-  }
+    created () {
+      this.isLogin()
+    },
+    mounted () {
+    if(window.history&&window.history.pushState){
+      history.pushState(null,null,document.URL)
+      window.addEventListener('popstate', this.goBack, false);
+    }
+  },
+  destroyed(){
+    window.removeEventListener('popstate',this.goBack,false);
+  },
+
 };
 </script>
 
