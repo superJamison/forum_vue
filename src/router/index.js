@@ -20,7 +20,7 @@ export default new Router({
       component: Index
     },
     {
-      path: '/publish',
+      path: '/publish/:id',
       name: 'Publish',
       component: Publish
     },

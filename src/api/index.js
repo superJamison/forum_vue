@@ -25,6 +25,11 @@ export const addQuestion = (question) => {
   return axios.post("/forum/question/addQuestion", Qs.stringify(question))
 }
 
+//更新问题
+export const updateQuestion = (question) => {
+  return axios.post("/forum/question/updateQuestion", Qs.stringify(question))
+}
+
 //查询的发起的问题
 export const getMyProblemPage = (page, limit, id) => {
   return axios.get("/forum/getMyProblemPage?page="+page+"&limit="+limit+"&id="+id);

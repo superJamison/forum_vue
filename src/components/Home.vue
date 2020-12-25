@@ -10,7 +10,8 @@
           <div class="right" >
             <span v-if="!$store.state.isLogin" style="margin-right: 10px;cursor:pointer"><router-link style="color: #606266;" to="/register">注册</router-link></span>
             <span v-if="!$store.state.isLogin" style="margin-right: 10px;cursor:pointer"><router-link style="color: #606266;" to="/login">登录</router-link></span>
-            <span v-if="$store.state.isLogin" style="margin-right: 10px;cursor:pointer"><router-link style="color: #606266;" to="/publish">发布</router-link></span>
+            <span v-if="$store.state.isLogin" style="margin-right: 10px;cursor:pointer"><router-link style="color: #606266;" :to="{name:'Publish', params: {id:null}}" >发布</router-link>
+            </span>
             <el-dropdown v-if="$store.state.isLogin" >
             <span class="el-dropdown-link" style="cursor:pointer">
               {{$store.state.username}}<i class="el-icon-arrow-down el-icon--right"></i>

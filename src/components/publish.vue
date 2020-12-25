@@ -15,7 +15,7 @@
               <el-input v-model="question.title"></el-input>
             </el-form-item>
             <el-form-item label="问题补充（必填）:" prop="description">
-              <el-input type="textarea" v-model="question.description"></el-input>
+              <el-input type="textarea" :rows="4" v-model="question.description"></el-input>
             </el-form-item>
             <el-form-item label="添加标签（逗号隔开）:" prop="tag">
               <el-input v-model="question.tag"></el-input>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-  import {addQuestion} from './../api/index'
+  import {addQuestion, getQuestionById, updateQuestion} from './../api/index'
   export default {
     name: 'Publish',
     data(){
@@ -63,39 +63,91 @@
           tag: [
             {required: true, message: '请填入标签，标签不能为空！并且标签以逗号隔开', trigger: 'blur'}
           ]
-        }
+        },
+        isUpdate: false
       }
     },
     methods: {
       submitForm(question) {
-        this.$refs[question].validate((valid) => {
-          if (valid) {
-            addQuestion(this.question)
-            .then(response =>{
-              console.log(response.data)
-              if (response.data.success){
-                this.$message({
-                  type: 'success',
-                  message: response.data.message
-                });
-              }else {
-                this.$message({
-                  type: 'error',
-                  message: response.data.message
-                });
-              }
+        console.log("question is:",this.question)
+        if (this.isUpdate){
+          //更新
+          this.$refs[question].validate((valid) => {
+            if (valid) {
+              updateQuestion(this.question)
+                .then(response =>{
+                  console.log(response.data)
+                  if (response.data.success){
+                    this.$message({
+                      type: 'success',
+                      message: response.data.message
+                    });
+                  }else {
+                    this.$message({
+                      type: 'error',
+                      message: response.data.message
+                    });
+                  }
+                })
+                .catch(result => {
+                  console.log(result)
+                })
+            } else {
+              return false;
+            }
+          });
+        }else {
+          //添加
+          this.$refs[question].validate((valid) => {
+            if (valid) {
+              addQuestion(this.question)
+                .then(response =>{
+                  if (response.data.success){
+                    this.$message({
+                      type: 'success',
+                      message: response.data.message
+                    });
+                  }else {
+                    this.$message({
+                      type: 'error',
+                      message: response.data.message
+                    });
+                  }
+                })
+                .catch(result => {
+                  console.log(result)
+                })
+            } else {
+              return false;
+            }
+          });
+        }
+
+      },
+      resetForm(question) {
+        this.$refs[question].resetFields();
+      },
+      getQuestion(){
+        // 获取传过来的参数
+        let questionId = decodeURIComponent(this.$route.params.id);
+        questionId = JSON.parse(questionId)
+        if (questionId !== null){
+          getQuestionById(questionId)
+            .then(response => {
+              this.question = response.data
             })
             .catch(result => {
               console.log(result)
             })
-          } else {
-            return false;
-          }
-        });
+          this.isUpdate =true
+        }else {
+          this.isUpdate = false
+        }
+
       },
-      resetForm(question) {
-        this.$refs[question].resetFields();
-      }
+    },
+    created () {
+      this.getQuestion()
     }
   }
 </script>
