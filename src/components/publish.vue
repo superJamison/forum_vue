@@ -69,7 +69,6 @@
     },
     methods: {
       submitForm(question) {
-        console.log("question is:",this.question)
         if (this.isUpdate){
           //更新
           this.$refs[question].validate((valid) => {
@@ -143,7 +142,6 @@
         }else {
           this.isUpdate = false
         }
-
       },
     },
     created () {

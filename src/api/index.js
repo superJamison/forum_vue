@@ -56,3 +56,8 @@ export const addViewCount = questionId => {
 export const addComment = (type, parentId, content) => {
   return axios.post("/forum/comment/addComment", Qs.stringify({type: type, parentId:parentId, content:content}));
 };
+
+//根据id查询所有的评论
+export const getReplyById = (questionId) => {
+  return axios.get("/forum/comment/getReplyById?questionId="+questionId);
+};

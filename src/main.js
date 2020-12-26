@@ -14,6 +14,8 @@ import router from './router'
 import Vuex from 'vuex'
 import VueSession from 'vue-session'
 import VueCookies from 'vue-cookies'
+import VueIconFont from 'vue-icon-font'
+import './assets/iconfont/iconfont.js';
 
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);
@@ -22,6 +24,7 @@ Vue.use(zPagenav);
 Vue.use(VueSession)
 Vue.use(VueCookies);
 Vue.config.productionTip = false
+Vue.use(VueIconFont)
 
 
 const store = new Vuex.Store({

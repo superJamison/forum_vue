@@ -14,37 +14,70 @@
         <div class="main-content" >
           <div  class="descript">{{currentQuestion.description}}</div>
           <div style="height: 280px"></div>
-          <div class="line"></div>
+          <el-divider content-position="left"></el-divider>
           <p>
             <span class="tag" v-for="tag in strToTags(this.currentQuestion.tag)">{{tag}}</span>
           </p>
-          <div class="line"></div>
+          <el-divider content-position="left"></el-divider>
           <router-link style="color: #606266;" :to="{name:'Publish', params: {id:this.currentQuestion.id}}" >
             <div @click="toQuestionEdit" class="edit">
               <i class="el-icon-edit"></i>编辑
             </div>
           </router-link>
 
-          <div class="line"></div>
-          2 个回复
-          <div class="line"></div>
-          <ul>
-            <li class="replyList">
+          <el-divider content-position="left"></el-divider>
+          {{allReply.length}} 个回复
+          <el-divider content-position="left">回复内容</el-divider>
+          <ul class="allReply">
+            <li class="replyList" v-for="(reply, index) in allReply">
               <div class="left">
-                <img src="" alt="">
-                <div class="reply"></div>
-                <p class="start">
-                  点赞
-                  评论
-                  2020-12-22
-                </p>
+                <el-avatar :size="50" >
+                  <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+                </el-avatar>
+                <span class="reply">{{reply.comment.content}}</span>
               </div>
+              <p class="star" >
+                <span style="cursor: pointer">
+                  <icon name="icon-test"></icon>
+                </span>
+                <span style="cursor: pointer" @click="subReply(reply.comment.id)">
+                  <icon class="commentBtn" :id="'commentBtn'+reply.comment.id" name="entypocomment" ></icon>
+                  <span>{{reply.children.length}}</span>
+                </span>
+                <span class="reply_time">{{formatDateFilter(reply.comment.gmtCreate)}}</span>
+              </p>
+              <div class="line"  style="position:relative;top: -28px"></div>
+              <ul style="list-style: none;" v-show="false" :id="'subReply-'+reply.comment.id">
+                <li v-for="childrenReply in reply.children">
+                  <div class="left">
+                    <el-avatar :size="50" >
+                      <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+                    </el-avatar>
+                    <span class="reply">{{childrenReply.content}}</span>
+                  </div>
+                  <p class="star">
+                    <icon name="icon-test"></icon>
+                    <span class="reply_time">{{formatDateFilter(childrenReply.gmtCreate)}}</span>
+                  </p>
+                  <div class="line" style="position:relative;top: -28px"></div>
+                </li>
+                <el-input
+                  placeholder="评论一下......"
+                  clearable
+                  v-model="subReplyContent[index].content"
+                >
+<!--                  :id="'subComment-'+reply.comment.id"-->
+                </el-input>
+                <div class="subCommentBtn">
+                  <el-button type="primary" @click="subCommentBtn(reply.comment.id, index)">评论</el-button>
+                </div>
+              </ul>
             </li>
           </ul>
-          <div class="line"></div>
+          <el-divider content-position="left"></el-divider>
           <div class="reply_title">提交回复</div>
-          <div class="line"></div>
-          <div class="reply">
+          <el-divider content-position="left"></el-divider>
+          <div>
             <div class="reply_user">
               <el-avatar :size="50">
                 <img  class="reply_user_img" src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
@@ -56,8 +89,6 @@
           <div class="reply_btn">
             <el-button type="primary" @click="replyCommentSubmit">回复</el-button>
           </div>
-
-
         </div>
       </div>
       <div class="col-lg-3 col-md-12 col-sm-12" style="font-size: 13px;padding: 20px" >
@@ -73,9 +104,10 @@
 
 <script>
   import $ from 'jquery'
-  import {addViewCount, getQuestionById, addComment} from '../api'
+  import {addViewCount, getQuestionById, addComment, getReplyById} from '../api'
   export default {
     name: 'QuestionDetail',
+    inject:['reload'],
     data(){
       return {
         currentQuestion: {
@@ -83,7 +115,9 @@
             username: ''
           }
         },
-        replyComment: ''
+        replyComment: '',
+        allReply: [],
+        subReplyContent: [],//二级评论内容
       }
     },
     methods: {
@@ -95,6 +129,16 @@
           .catch(result => {
             console.log(result)
           })
+        getReplyById(this.getQuestionId())
+        .then(response => {
+          this.allReply = response.data
+          for (let i = 0; i < this.allReply.length; i++){
+            this.subReplyContent.push({content: ""})
+          }
+        })
+        .catch(result => {
+          console.log(result)
+        })
       },
       getQuestionId(){
         // 获取传过来的参数
@@ -137,17 +181,48 @@
         }
         return null
       },
-      beforeunloadFn () {
+      beforeunloadFn(){
         addViewCount(this.getQuestionId())
       },
       replyCommentSubmit(){
         addComment(1,this.currentQuestion.id, this.replyComment)
         .then(response => {
-          console.log(response)
+          if (!response.data.success){
+            alert(response.data.message)
+          }else {
+            this.replyComment = ''
+            this.reload()
+          }
         })
         .catch(result => {
           console.log(result)
         })
+
+      },
+      //展开二级评论
+      subReply(id){
+        $('#subReply-' + id).toggle()
+        if($('#subReply-' + id).is(":hidden")){
+          //隐藏
+          $("#commentBtn"+id).css("color","#333")
+        }else{
+          //打开
+          $("#commentBtn"+id).css("color","#499ef3")
+        }
+      },
+      subCommentBtn(questionId, index){
+        addComment(2,questionId, this.subReplyContent[index].content)
+          .then(response => {
+            if (!response.data.success){
+              alert(response.data.message)
+            }else {
+              this.subReplyContent[index].content = ''
+              this.reload()
+            }
+          })
+          .catch(result => {
+            console.log(result)
+          })
 
       }
     },
@@ -184,7 +259,7 @@
     height: .5px;
     background-color: #cccccc;
     float: left;
-    margin: 15px 0 15px 0;
+    margin: 1px 0 1px 0;
   }
   .tag{
     text-decoration-line: none;
@@ -230,8 +305,17 @@
   .edit:hover{
     color: #4444e2;
   }
-  .reply{
+  .allReply{
+    list-style: none;
     margin-left: 15px;
+  }
+  .reply{
+    line-height: 50px;
+    height: 50px;
+    position: relative;
+    top: -20px;
+    left: 10px;
+    display: inline-block;
   }
   .reply_user .reply_user_name{
     line-height: 50px;
@@ -241,9 +325,27 @@
     left: 10px;
     display: inline-block;
   }
+  .star{
+    margin-left: 60px;
+    position: relative;
+    top: -14px;
+  }
+  .reply_time{
+    float: right;
+    color: #999999;
+    font-size: 14px;
+  }
   .reply_btn{
     float: right;
     margin-top: 15px;
   }
-
+  .commentBtn:hover{
+    color: #499ef3;
+  }
+  .subCommentBtn{
+    position: relative;
+    left: 87%;
+    top: 15px;
+    margin-bottom: 29px;
+  }
 </style>

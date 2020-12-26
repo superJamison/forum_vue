@@ -33,8 +33,7 @@
               </div>
             </li>
           </ul>
-
-
+          <!--分页-->
           <zpagenav :page="page" :page-size="pageSize" :total="total"
                     :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
         </div>
@@ -62,6 +61,9 @@
     },
     components: {},
     methods: {
+      childe(){
+        console.log('hello  my name is jamison')
+      },
       pageHandler(page) {
         this.page = page
         getIndexPage(page, this.pageSize)
