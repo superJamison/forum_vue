@@ -1,0 +1,23 @@
+{
+  "id": "2294300",
+  "name": "forum",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "13451917",
+      "name": "thumb",
+      "font_class": "icon-test",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "13693585",
+      "name": "comment",
+      "font_class": "entypocomment",
+      "unicode": "e989",
+      "unicode_decimal": 59785
+    }
+  ]
+}
