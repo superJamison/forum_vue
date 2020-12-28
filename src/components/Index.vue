@@ -25,7 +25,7 @@
                  <br>
                 <span style="color: #999999;font-size: 14px; ">{{question.description}}</span>
                 <br>
-                <span style="color: #999999;font-size: 13px; "><span>{{question.likeCount}}</span> 人关注 •
+                <span style="color: #999999;font-size: 13px; "><span>{{question.likeCount}}</span> 人点赞 •
                   <span>{{question.commentCount}}</span> 个回复 •
                   <span>{{question.viewCount}}</span> 次浏览 •
                   <span>{{ formatDateFilter(question.gmtCreate) }}</span></span>
@@ -57,22 +57,24 @@
         pageSize: 5,
         total: 0,
         maxPage: 9,
+        searchContent: this.$store.state.searchContent
       };
     },
     components: {},
     methods: {
       childe(){
-        console.log('hello  my name is jamison')
+        this.pageHandler(1)
       },
       pageHandler(page) {
         this.page = page
-        getIndexPage(page, this.pageSize)
+        getIndexPage(page, this.pageSize, this.$store.state.searchContent)
           .then((response) => {
             this.questionList = response.data.data
             for (let i = 0; i < this.questionList.length; i++) {
               this.questionList[i].description = this.stringToShorter(this.questionList[i].description);
             }
             this.total = response.data.total
+            this.$store.state.searchContent = ''
           })
           .catch((result) => {
             console.log(result)

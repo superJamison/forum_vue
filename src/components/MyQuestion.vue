@@ -1,40 +1,51 @@
 <template>
-    <div>
-      <div class="col-lg-12 col-md-12 col-sm-12" style="border-right: 1px solid #cccccc;">
-        <div class="main-top" >
-          <div id="fund">
-            <i class="el-icon-question" style="margin-right: 10px;float: left;margin-top: 3px;"></i>
-            <span style="float: left;">我的提问</span>
-          </div>
-          <div class="line" ></div>
+  <div>
+    <div class="col-lg-12 col-md-12 col-sm-12" style="border-right: 1px solid #cccccc;">
+      <div class="main-top">
+        <div id="fund">
+          <i class="el-icon-question" style="margin-right: 10px;float: left;margin-top: 3px;"></i>
+          <span style="float: left;">我的提问</span>
         </div>
-        <ul>
-          <li v-for="question in questionList"
-              class="questions-li"
-          >
-            <div class="media-left" style="float:left;margin-right: 10px;">
-              <el-avatar :size="50" >
-                <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
-              </el-avatar>
-            </div>
-            <div class="question-right" >
-              <span style="color: #155faa;font-size: 15px">{{question.title}}</span>
-              <br>
-              <span style="color: #999999;font-size: 14px; ">{{question.description}}</span>
-              <br>
-              <span style="color: #999999;font-size: 13px; "><span>{{question.likeCount}}</span> 人关注 •
+        <div class="line"></div>
+      </div>
+      <ul>
+        <li v-for="question in questionList"
+            class="questions-li"
+        >
+          <div class="media-left" style="float:left;margin-right: 10px;">
+            <el-avatar :size="50">
+              <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+            </el-avatar>
+          </div>
+          <div class="question-right">
+            <router-link :to="'/questionDetail/'+question.id" style="color: #606266;">
+              <span style="color: #155faa;font-size: 15px;cursor:pointer">{{question.title}}</span>
+            </router-link>
+            <br>
+            <span style="color: #999999;font-size: 14px; ">{{question.description}}</span>
+            <br>
+            <span style="color: #999999;font-size: 13px; ">
+                  <span>{{question.likeCount}}</span> 人点赞 •
                   <span>{{question.commentCount}}</span> 个回复 •
                   <span>{{question.viewCount}}</span> 次浏览 •
-                  <span>{{ formatDateFilter(question.gmtCreate) }}</span></span>
+                  <span>{{ formatDateFilter(question.gmtCreate) }}</span>
+                  <span>
+                    <router-link style="color: #999999;margin-left: 10px;" :to="{name:'Publish', params: {id:question.id}}">
+                      <span @click="toQuestionEdit" class="edit">
+                        <i class="el-icon-edit"></i>编辑
+                      </span>
+                    </router-link>
+                  </span>
+            </span>
 
-            </div>
-          </li>
-        </ul>
-
-        <zpagenav :page="page" :page-size="pageSize" :total="total"
-                  :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
-      </div>
+          </div>
+        </li>
+      </ul>
+      <!--分页-->
+      <zpagenav :page="page" :page-size="pageSize" :total="total"
+                :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
     </div>
+  </div>
 </template>
 
 <script>
@@ -42,7 +53,7 @@
 
   export default {
     name: 'MyQuestion',
-    data() {
+    data () {
       return {
         input: '',
         questionList: [],
@@ -53,18 +64,18 @@
         myProblemClass: 'list-group-item active',
         newReplyClass: 'list-group-item',
         routerChange: this.$route.params.section
-      };
+      }
     },
     components: {},
     methods: {
-      pageHandler(page) {
+      pageHandler (page) {
         this.page = page
-        let user = this.$session.get("user")
+        let user = this.$session.get('user')
         getMyProblemPage(page, this.pageSize, user.id)
           .then((response) => {
             this.questionList = response.data.data
             for (let i = 0; i < this.questionList.length; i++) {
-              this.questionList[i].description = this.stringToShorter(this.questionList[i].description);
+              this.questionList[i].description = this.stringToShorter(this.questionList[i].description)
             }
             this.total = response.data.total
           })
@@ -72,12 +83,12 @@
             console.log(result)
           })
       },
-      padLeftZero(str) {
-        return ('00' + str).substr(str.length);
+      padLeftZero (str) {
+        return ('00' + str).substr(str.length)
       },
-      formatDate(date, fmt) {
+      formatDate (date, fmt) {
         if (/(y+)/.test(fmt)) {
-          fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+          fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
         }
         let o = {
           'M+': date.getMonth() + 1,
@@ -85,72 +96,77 @@
           'h+': date.getHours(),
           'm+': date.getMinutes(),
           's+': date.getSeconds()
-        };
+        }
         for (let k in o) {
           if (new RegExp(`(${k})`).test(fmt)) {
-            let str = o[k] + '';
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : this.padLeftZero(str));
+            let str = o[k] + ''
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : this.padLeftZero(str))
           }
         }
-        return fmt;
+        return fmt
       },
-      formatDateFilter(time) {
-        let date = new Date(time);
-        return this.formatDate(date, 'yyyy-MM-dd HH:mm');
+      formatDateFilter (time) {
+        let date = new Date(time)
+        return this.formatDate(date, 'yyyy-MM-dd hh:mm')
       },
-      stringToShorter(str){
+      stringToShorter (str) {
         if (str.length > 30) {
           let new_value = str.substring(0, 50) + '......'
           return new_value
         }
         return str
       },
-      myProblem(){
+      myProblem () {
         this.myProblemClass = 'list-group-item active'
         this.newReplyClass = 'list-group-item'
       },
-      newReply(){
+      newReply () {
         this.myProblemClass = 'list-group-item '
         this.newReplyClass = 'list-group-item active'
       },
-      sectionTo(){
-        if (this.$route.params.section === "myProblem"){
+      sectionTo () {
+        if (this.$route.params.section === 'myProblem') {
           this.myProblem()
-        }else if (this.$route.params.section === "newReply"){
+        } else if (this.$route.params.section === 'newReply') {
           this.newReply()
         }
-      }
-
+      },
+      toQuestionEdit(){
+        this.$router.replace('/publish')
+      },
     },
-    created() {
-      this.sectionTo();
+    created () {
+      this.sectionTo()
       this.pageHandler(1)
     },
     watch: {
-      routerChange(newValue, oldValue){
-        this.sectionTo();
+      routerChange (newValue, oldValue) {
+        this.sectionTo()
       }
     }
   }
 </script>
 
 <style>
-  .aside{
+  .aside {
     border-right: 1px solid #cccccc;
     padding: 20px;
     box-sizing: border-box;
   }
-  .main-top{
+
+  .main-top {
     width: 100%;
     padding-bottom: 10px;
     margin-top: 10px;
   }
-  #fund{
+
+  #fund {
     width: 100%;
     font-size: 20px;
     font-weight: bold;
   }
-  .line{
+
+  .line {
     width: 100%;
     height: 1px;
     background-color: #cccccc;
@@ -158,28 +174,35 @@
     margin-top: 10px;
     margin-bottom: 5px;
   }
-  ul{
+
+  ul {
     padding-top: 5px;
   }
+
   ul li {
     list-style-type: none;
     border-bottom: 1px solid #cccccc;
+    margin: 2px 0;
+    padding-bottom: 3px;
   }
-  .questions-li{
+
+  .questions-li {
     text-align: left;
     padding-top: 5px;
   }
-  .hotTopic{
+
+  .hotTopic {
     margin-top: 15px;
   }
-  .section{
+
+  .section {
     margin-top: 20px;
   }
-  .section a{
+
+  .section a {
     text-decoration: none;
     color: #333;
   }
-
 
 
   /*分页css*/
@@ -202,9 +225,11 @@
     overflow: visible;
     clip: auto;
   }
+
   .m-r-1 {
-    margin-right: 1rem!important;
+    margin-right: 1rem !important;
   }
+
   .pagination {
     display: inline-block;
     padding-left: 0;

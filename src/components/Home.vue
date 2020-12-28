@@ -4,7 +4,7 @@
       <el-header style="background-color: #499ef3;">
         <div class="top" style="color: #ffffff">
           <span class="title" style="float: left;line-height: 40px;cursor:pointer"><router-link style="color: #ffffff;text-decoration: none;" to="/">论坛中心</router-link></span>
-            <el-input v-model="searchContent" placeholder="请搜索内容..." style="width: 300px;height: 30px;float: left;margin-left: 30px;"></el-input>
+            <el-input v-model="$store.state.searchContent" placeholder="请搜索内容..." style="width: 300px;height: 30px;float: left;margin-left: 30px;"></el-input>
           <el-button type="success" style="float: left;margin-left: 10px;" @click="searchBtn">搜索</el-button>
 
           <div class="right" >
@@ -26,7 +26,7 @@
           </div>
         </div>
       </el-header>
-      <router-view v-if="isRouterAlive"></router-view>  <!--ref="Childmain"-->
+      <router-view ref="Childmain" v-if="isRouterAlive"></router-view>  <!--ref="Childmain"-->
     </el-container>
   </div>
 </template>
@@ -43,8 +43,9 @@
     },
   data() {
     return {
-      searchContent: "",
-      isRouterAlive: true
+      isRouterAlive: true,
+      oldRouterPath: '',
+      newRouterPath: '/'
     };
   },
   methods: {
@@ -88,7 +89,10 @@
     goBack(){
       //回退
       //TODO 默认暂时返回的是首页，但后续要实现的是返回到上一个页面
-      this.$router.replace({path:'/'});
+      console.log(this.newRouterPath)
+      if (this.newRouterPath !== "/"){
+        this.$router.replace({path: '/'});
+      }
     },
     reload(){
       this.isRouterAlive = false
@@ -98,12 +102,14 @@
       })
     },
     searchBtn(){
-      /*this.$router.replace('/')
-      this.$refs['Childmain'].childe()*/
+      if (this.newRouterPath !== "/") {
+        this.$router.replace({path: '/'});
+      }else {
+        this.$refs['Childmain'].childe()
+      }
     }
   },
     created () {
-
       this.isLogin()
     },
     mounted () {
@@ -115,6 +121,18 @@
   destroyed(){
     window.removeEventListener('popstate',this.goBack,false);
   },
+    watch: {
+      $route: {
+        handler: function(val, oldVal){
+          console.log(val);
+          console.log(oldVal);
+          this.oldRouterPath = oldVal.path
+          this.newRouterPath = val.path
+        },
+        // 深度观察监听
+        deep: true
+      }
+    },
 
 };
 </script>

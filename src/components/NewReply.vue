@@ -96,7 +96,7 @@
       },
       formatDateFilter(time) {
         let date = new Date(time);
-        return this.formatDate(date, 'yyyy-MM-dd HH:mm');
+        return this.formatDate(date, 'yyyy-MM-dd hh:mm');
       },
       stringToShorter(str){
         if (str.length > 30) {

@@ -37,8 +37,8 @@
                 <span class="reply">{{reply.comment.content}}</span>
               </div>
               <p class="star" >
-                <span style="cursor: pointer">
-                  <icon name="icon-test"></icon>
+                <span style="cursor: pointer" @click="like(reply.comment.id)">
+                  <icon  name="icon-test" :id="'like-'+reply.comment.id"></icon>
                 </span>
                 <span style="cursor: pointer" @click="subReply(reply.comment.id)">
                   <icon class="commentBtn" :id="'commentBtn'+reply.comment.id" name="entypocomment" ></icon>
@@ -56,7 +56,9 @@
                     <span class="reply">{{childrenReply.content}}</span>
                   </div>
                   <p class="star">
-                    <icon name="icon-test"></icon>
+                    <span style="cursor: pointer" @click="like(childrenReply.id)">
+                      <icon  name="icon-test" :id="'like-'+childrenReply.id"></icon>
+                    </span>
                     <span class="reply_time">{{formatDateFilter(childrenReply.gmtCreate)}}</span>
                   </p>
                   <div class="line" style="position:relative;top: -28px"></div>
@@ -104,7 +106,11 @@
 
 <script>
   import $ from 'jquery'
-  import {addViewCount, getQuestionById, addComment, getReplyById} from '../api'
+  import {addViewCount,
+    getQuestionById,
+    addComment,
+    getReplyById,
+    addLikeCount} from '../api'
   export default {
     name: 'QuestionDetail',
     inject:['reload'],
@@ -224,7 +230,23 @@
             console.log(result)
           })
 
-      }
+      },
+      like(commentId){ //点赞
+        addLikeCount(commentId)
+        .then(response => {
+          console.log(response.data)
+          if (response.data.success){
+            console.log($('#like-' + commentId))
+            $("#like-"+commentId).addClass("likeActive")
+          }else {
+            alert(response.data.message)
+          }
+        })
+        .catch(result => {
+          console.log(result)
+        })
+      },
+
     },
     created () {
       this.getQuestion()
@@ -236,6 +258,7 @@
     destroyed() {
       window.removeEventListener('beforeunload', () => this.beforeunloadFn())
     }*/
+
   }
 </script>
 
@@ -347,5 +370,8 @@
     left: 87%;
     top: 15px;
     margin-bottom: 29px;
+  }
+  .likeActive{
+    color: red;
   }
 </style>

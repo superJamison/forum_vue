@@ -12,8 +12,8 @@ axios.defaults.withCredentials = true //请求发送cookie
 
 
 //post传数据用data，get传参数用params
-export const getIndexPage = (page, limit) => {
-  return axios.get("/forum/getIndexPage?page="+page+"&limit="+limit);
+export const getIndexPage = (page, limit, searchContent) => {
+  return axios.get("/forum/getIndexPage?page="+page+"&limit="+limit+"&searchContent="+searchContent);
 };
 
 //登录
@@ -60,4 +60,8 @@ export const addComment = (type, parentId, content) => {
 //根据id查询所有的评论
 export const getReplyById = (questionId) => {
   return axios.get("/forum/comment/getReplyById?questionId="+questionId);
+};
+
+export const addLikeCount = (id) => {
+  return axios.post("/forum/comment/addLikeCount", Qs.stringify({id: id}));
 };

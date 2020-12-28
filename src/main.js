@@ -31,11 +31,9 @@ const store = new Vuex.Store({
   state: {
     isLogin: false,
     username: '',
-    userId: -1
+    userId: -1,
+    searchContent: "",
   },
-  mutations: {
-
-  }
 })
 
 /* eslint-disable no-new */
