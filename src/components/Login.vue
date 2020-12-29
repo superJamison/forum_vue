@@ -40,6 +40,7 @@
             this.$session.set("user", response.data.user)
             this.$cookies.set("token", response.data.user.token)
 
+            this.$router.replace({path: '/'});
             //window.sessionStorage.setItem("user",JSON.stringify(response.data.user));
             this.$message({
               type: 'success',

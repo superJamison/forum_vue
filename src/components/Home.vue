@@ -3,7 +3,7 @@
     <el-container>
       <el-header style="background-color: #499ef3;">
         <div class="top" style="color: #ffffff">
-          <span class="title" style="float: left;line-height: 40px;cursor:pointer"><router-link style="color: #ffffff;text-decoration: none;" to="/">论坛中心</router-link></span>
+          <span class="title" @click="forumCenter" style="float: left;line-height: 40px;cursor:pointer"><router-link style="color: #ffffff;text-decoration: none;" to="/">论坛中心</router-link></span>
             <el-input v-model="$store.state.searchContent" placeholder="请搜索内容..." style="width: 300px;height: 30px;float: left;margin-left: 30px;"></el-input>
           <el-button type="success" style="float: left;margin-left: 10px;" @click="searchBtn">搜索</el-button>
 
@@ -26,13 +26,13 @@
           </div>
         </div>
       </el-header>
-      <router-view ref="Childmain" v-if="isRouterAlive"></router-view>  <!--ref="Childmain"-->
+      <router-view ref="Childmain" v-if="isRouterAlive"></router-view>
+
     </el-container>
   </div>
 </template>
 
 <script>
-  import {getIndexPage} from '../api'
 
   export default {
   name: "Home",
@@ -107,6 +107,10 @@
       }else {
         this.$refs['Childmain'].childe()
       }
+    },
+    forumCenter(){
+      this.$store.state.searchContent = ''
+      this.$refs['Childmain'].childe()
     }
   },
     created () {
@@ -124,8 +128,6 @@
     watch: {
       $route: {
         handler: function(val, oldVal){
-          console.log(val);
-          console.log(oldVal);
           this.oldRouterPath = oldVal.path
           this.newRouterPath = val.path
         },

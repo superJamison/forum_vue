@@ -1,15 +1,19 @@
 <template>
-    <div>
-      Register
-    </div>
+  <div>
+
+  </div>
 </template>
 
 <script>
+
   export default {
-    name: 'Register'
+    name: 'Register',
+
+
   }
 </script>
 
-<style scoped>
+<style>
+
 
 </style>

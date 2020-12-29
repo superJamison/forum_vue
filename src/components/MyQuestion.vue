@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="col-lg-12 col-md-12 col-sm-12" style="border-right: 1px solid #cccccc;">
+    <div class="col-lg-12 col-md-12 col-sm-12" style="height: 414px;border-right: 1px solid #cccccc;">
       <div class="main-top">
         <div id="fund">
           <i class="el-icon-question" style="margin-right: 10px;float: left;margin-top: 3px;"></i>
@@ -14,7 +14,7 @@
         >
           <div class="media-left" style="float:left;margin-right: 10px;">
             <el-avatar :size="50">
-              <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+              <img v-if="(typeof question.user.avatarUrl) !== 'undefined'" :src="require('./../assets/images/img/'+question.user.avatarUrl)" alt="picture"/>
             </el-avatar>
           </div>
           <div class="question-right">
@@ -66,7 +66,6 @@
         routerChange: this.$route.params.section
       }
     },
-    components: {},
     methods: {
       pageHandler (page) {
         this.page = page

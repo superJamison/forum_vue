@@ -40,6 +40,11 @@
         </div>
         <div class="col-lg-3 col-md-12 col-sm-12">
           <div class="list-group section">
+            <router-link to="/my/perCenter">
+              <a class="perCenter" @click="perCenter" :class="perCenterClass">
+                个人中心
+              </a>
+            </router-link>
             <router-link to="/my/myQuestion">
               <a class="myProblem" @click="myProblem" :class="myProblemClass">
                 我的问题
@@ -65,13 +70,9 @@
     data() {
       return {
         input: '',
-        questionList: [],
-        page: 1,
-        pageSize: 5,
-        total: 0,
-        maxPage: 9,
         myProblemClass: 'list-group-item active',
         newReplyClass: 'list-group-item',
+        perCenterClass: "list-group-item",
         routerChange: this.$route.params.section,
       };
     },
@@ -127,11 +128,19 @@
       },
       myProblem(){
         this.myProblemClass = 'list-group-item active'
+        this.perCenterClass = 'list-group-item'
+        this.newReplyClass = 'list-group-item'
+
+      },
+      perCenter(){
+        this.perCenterClass = 'list-group-item active'
+        this.myProblemClass = 'list-group-item'
         this.newReplyClass = 'list-group-item'
 
       },
       newReply(){
         this.myProblemClass = 'list-group-item '
+        this.perCenterClass = 'list-group-item '
         this.newReplyClass = 'list-group-item active'
       },
       sectionTo(){

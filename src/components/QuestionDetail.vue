@@ -16,7 +16,9 @@
           <div style="height: 280px"></div>
           <el-divider content-position="left"></el-divider>
           <p>
-            <span class="tag" v-for="tag in strToTags(this.currentQuestion.tag)">{{tag}}</span>
+            <span class="tag" v-for="tag in strToTags(this.currentQuestion.tag)">
+              <span @click="clickTag(tag)">{{tag}}</span>
+            </span>
           </p>
           <el-divider content-position="left"></el-divider>
           <router-link style="color: #606266;" :to="{name:'Publish', params: {id:this.currentQuestion.id}}" >
@@ -68,7 +70,6 @@
                   clearable
                   v-model="subReplyContent[index].content"
                 >
-<!--                  :id="'subComment-'+reply.comment.id"-->
                 </el-input>
                 <div class="subCommentBtn">
                   <el-button type="primary" @click="subCommentBtn(reply.comment.id, index)">评论</el-button>
@@ -124,6 +125,8 @@
         replyComment: '',
         allReply: [],
         subReplyContent: [],//二级评论内容
+        oldRouterPath: '',
+        newRouterPath: ''
       }
     },
     methods: {
@@ -246,19 +249,25 @@
           console.log(result)
         })
       },
-
+      clickTag(tagContent){
+        this.$store.state.searchContent = tagContent
+        this.$router.replace({path: '/'});
+      }
     },
     created () {
       this.getQuestion()
       this.beforeunloadFn()
     },
-    /*mounted() {
-      window.addEventListener('beforeunload', () => this.beforeunloadFn())
-    },
-    destroyed() {
-      window.removeEventListener('beforeunload', () => this.beforeunloadFn())
-    }*/
-
+    watch: {
+      $route: {
+        handler: function(val, oldVal){
+          this.oldRouterPath = oldVal.path
+          this.newRouterPath = val.path
+        },
+        // 深度观察监听
+        deep: true
+      }
+    }
   }
 </script>
 

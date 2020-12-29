@@ -13,9 +13,10 @@
             <li v-for="question in questionList"
                 class="questions-li"
                 >
+
               <div class="media-left" style="float:left;margin-right: 10px;">
                 <el-avatar :size="50" >
-                  <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+                  <img v-if="(typeof question.user.avatarUrl) !== 'undefined'" :src="require('./../assets/images/img/'+question.user.avatarUrl)" alt="picture"/>
                 </el-avatar>
               </div>
               <div class="question-right" >
@@ -57,7 +58,9 @@
         pageSize: 5,
         total: 0,
         maxPage: 9,
-        searchContent: this.$store.state.searchContent
+        searchContent: this.$store.state.searchContent,
+
+        user: {}
       };
     },
     components: {},
@@ -66,15 +69,18 @@
         this.pageHandler(1)
       },
       pageHandler(page) {
+        this.user = this.$session.get("user");
         this.page = page
         getIndexPage(page, this.pageSize, this.$store.state.searchContent)
           .then((response) => {
             this.questionList = response.data.data
+            console.log(this.questionList)
             for (let i = 0; i < this.questionList.length; i++) {
               this.questionList[i].description = this.stringToShorter(this.questionList[i].description);
             }
             this.total = response.data.total
             this.$store.state.searchContent = ''
+
           })
           .catch((result) => {
             console.log(result)
@@ -115,7 +121,8 @@
       },
       toDetail(question){
 
-      }
+      },
+
     },
     created() {
       this.pageHandler(1)

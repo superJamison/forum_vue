@@ -9,6 +9,7 @@ import My from '../components/My'
 import MyQuestion from '../components/MyQuestion'
 import NewReply from '../components/NewReply'
 import QuestionDetail from '../components/QuestionDetail'
+import PerCenter from '../components/PerCenter'
 
 Vue.use(Router)
 
@@ -48,6 +49,10 @@ export default new Router({
       name: 'My',
       component: My,
       children: [
+        {
+          path: 'perCenter',
+          component: PerCenter
+        },
         {
           path: 'myQuestion',
           component: MyQuestion

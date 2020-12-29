@@ -36,6 +36,11 @@ export const getMyProblemPage = (page, limit, id) => {
   return axios.get("/forum/getMyProblemPage?page="+page+"&limit="+limit+"&id="+id);
 };
 
+//查询的最新回复
+export const getMyNewReplyPage = (page, limit, id) => {
+  return axios.get("/forum/getMyNewReplyPage?page="+page+"&limit="+limit+"&id="+id);
+};
+
 //根据id获取question
 export const getQuestionById = questionId => {
   return axios.post("/forum/question/getQuestionById", Qs.stringify({id: questionId}));
@@ -65,3 +70,22 @@ export const getReplyById = (questionId) => {
 export const addLikeCount = (id) => {
   return axios.post("/forum/comment/addLikeCount", Qs.stringify({id: id}));
 };
+
+export function fileUpload(param) {
+ /* return axios({
+    method: 'post',
+    url: '/user/upload',
+    headers: {'Content-Type':'multipart/form-data'},
+    params: param
+  })*/
+  //return axios.post('/user/upload', Qs.stringify(param))
+   return axios({
+      url: '/forum/user/upload',
+      method: 'post',
+      data: Qs.stringify(param),
+      headers: {
+        'Content-Type':'multipart/form-data'
+      }
+    })
+
+}

@@ -1,6 +1,6 @@
 <template>
     <div>
-      <div class="col-lg-12 col-md-12 col-sm-12" style="border-right: 1px solid #cccccc;">
+      <div class="col-lg-12 col-md-12 col-sm-12" style="height: 414px;border-right: 1px solid #cccccc;">
         <div class="main-top" >
           <div id="fund">
             <i class="el-icon-question" style="margin-right: 10px;float: left;margin-top: 3px;"></i>
@@ -13,24 +13,35 @@
               class="questions-li"
           >
             <div class="media-left" style="float:left;margin-right: 10px;">
-              <el-avatar :size="50" >
-                <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+              <el-avatar :size="50">
+                <img v-if="(typeof question.user.avatarUrl) !== 'undefined'" :src="require('./../assets/images/img/'+question.user.avatarUrl)" alt="picture"/>
               </el-avatar>
             </div>
-            <div class="question-right" >
-              <span style="color: #155faa;font-size: 15px">{{question.title}}</span>
+            <div class="question-right">
+              <router-link :to="'/questionDetail/'+question.id" style="color: #606266;">
+                <span style="color: #155faa;font-size: 15px;cursor:pointer">{{question.title}}</span>
+              </router-link>
               <br>
               <span style="color: #999999;font-size: 14px; ">{{question.description}}</span>
               <br>
-              <span style="color: #999999;font-size: 13px; "><span>{{question.likeCount}}</span> 人关注 •
+              <span style="color: #999999;font-size: 13px; ">
+                  <span>{{question.likeCount}}</span> 人点赞 •
                   <span>{{question.commentCount}}</span> 个回复 •
                   <span>{{question.viewCount}}</span> 次浏览 •
-                  <span>{{ formatDateFilter(question.gmtCreate) }}</span></span>
+                  <span>{{ formatDateFilter(question.gmtCreate) }}</span>
+                  <span>
+                    <router-link style="color: #999999;margin-left: 10px;" :to="{name:'Publish', params: {id:question.id}}">
+                      <span @click="toQuestionEdit" class="edit">
+                        <i class="el-icon-edit"></i>编辑
+                      </span>
+                    </router-link>
+                  </span>
+            </span>
 
             </div>
           </li>
         </ul>
-
+        <!--分页-->
         <zpagenav :page="page" :page-size="pageSize" :total="total"
                   :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
       </div>
@@ -38,7 +49,7 @@
 </template>
 
 <script>
-  import {getMyProblemPage} from '../api'
+  import {getMyNewReplyPage} from '../api'
 
   export default {
     name: 'NewReply',
@@ -55,16 +66,15 @@
         routerChange: this.$route.params.section
       };
     },
-    components: {},
     methods: {
-      pageHandler(page) {
+      pageHandler (page) {
         this.page = page
-        let user = this.$session.get("user")
-        getMyProblemPage(page, this.pageSize, user.id)
+        let user = this.$session.get('user')
+        getMyNewReplyPage(page, this.pageSize, user.id)
           .then((response) => {
             this.questionList = response.data.data
             for (let i = 0; i < this.questionList.length; i++) {
-              this.questionList[i].description = this.stringToShorter(this.questionList[i].description);
+              this.questionList[i].description = this.stringToShorter(this.questionList[i].description)
             }
             this.total = response.data.total
           })
@@ -119,7 +129,10 @@
         }else if (this.$route.params.section === "newReply"){
           this.newReply()
         }
-      }
+      },
+      toQuestionEdit(){
+        this.$router.replace('/publish')
+      },
     },
     created() {
       this.sectionTo();
