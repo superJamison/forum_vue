@@ -17,8 +17,8 @@ export const getIndexPage = (page, limit, searchContent) => {
 };
 
 //登录
-export const login = (username, password) => {
-  return axios.post("/forum/user/login", Qs.stringify({username: username, password: password}))
+export const login = (username, password, validation) => {
+  return axios.post("/forum/user/login?validation="+validation, Qs.stringify({username: username, password: password}))
 }
 
 //添加问题
@@ -71,14 +71,8 @@ export const addLikeCount = (id) => {
   return axios.post("/forum/comment/addLikeCount", Qs.stringify({id: id}));
 };
 
+//头像上传
 export function fileUpload(param) {
- /* return axios({
-    method: 'post',
-    url: '/user/upload',
-    headers: {'Content-Type':'multipart/form-data'},
-    params: param
-  })*/
-  //return axios.post('/user/upload', Qs.stringify(param))
    return axios({
       url: '/forum/user/upload',
       method: 'post',
@@ -87,5 +81,21 @@ export function fileUpload(param) {
         'Content-Type':'multipart/form-data'
       }
     })
-
 }
+
+//注册添加
+export const add = (user) => {
+  return axios.post("/forum/user/add", Qs.stringify(user));
+};
+
+//获取热门话题
+export const getHotTags = () => {
+  return axios.get("/forum/question/getHotTags");
+};
+
+//验证码
+export const getImg = () => {
+  return axios.get("/forum/user/getImage?time="+Math.random())
+};
+
+

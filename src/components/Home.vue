@@ -27,19 +27,22 @@
         </div>
       </el-header>
       <router-view ref="Childmain" v-if="isRouterAlive"></router-view>
-
+      <Footer></Footer>
     </el-container>
   </div>
 </template>
 
 <script>
-
+import Footer from './../components/Footer'
   export default {
   name: "Home",
     provide(){
     return {
       reload: this.reload
     }
+    },
+    components: {
+      Footer
     },
   data() {
     return {
@@ -77,6 +80,7 @@
           type: 'success',
           message: '退出成功!'
         });
+        this.$router.replace({path: '/'});
       }).catch(() => {
         this.$message({
           type: 'info',

@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="row" style="border: 50px solid #efefef;">
+    <div class="row" style="border: 50px solid #efefef;border-bottom: 0">
       <div class="main col-lg-9 col-md-12 col-sm-12" >
         <div class="main-top" >
           <div id="fund">

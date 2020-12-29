@@ -1,6 +1,6 @@
 <template>
     <div>
-      <div class="col-lg-12 col-md-12 col-sm-12" style="height: 414px;border-right: 1px solid #cccccc;">
+      <div class="col-lg-12 col-md-12 col-sm-12" style="height: 560px;border-right: 1px solid #cccccc;">
         <div class="main-top" >
           <div id="fund">
             <i class="el-icon-question" style="margin-right: 10px;float: left;margin-top: 3px;"></i>

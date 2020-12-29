@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
       <div class="row" style="border: 50px solid #efefef;border-bottom: 0;">
-        <div class="col-lg-9 col-md-12 col-sm-12" style="border-right: 1px solid #cccccc;">
+        <div class="col-lg-9 col-md-12 col-sm-12" style="height: 560px;border-right: 1px solid #cccccc;">
           <div class="main-top" >
             <div id="fund">
               <i class="el-icon-s-fold" style="margin-right: 10px;float: left;margin-top: 3px;"></i>
@@ -38,15 +38,22 @@
           <zpagenav :page="page" :page-size="pageSize" :total="total"
                     :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
         </div>
-        <div class="col-lg-3 col-md-12 col-sm-12">
-          <h3 class="hotTopic">热门话题</h3>
+        <div class="col-lg-3 col-md-12 col-sm-12" >
+          <div style="height: 414px;">
+            <h3 class="hotTopic">热门话题</h3>
+            <div>
+              <span class="tag" v-for="tag in strToTags(this.hotTags)">
+                <span @click="clickTag(tag)">{{tag}}</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 </template>
 
 <script>
-  import {getIndexPage} from '../api'
+  import {getIndexPage, getHotTags} from '../api'
 
   export default {
     name: 'Index',
@@ -59,8 +66,8 @@
         total: 0,
         maxPage: 9,
         searchContent: this.$store.state.searchContent,
-
-        user: {}
+        user: {},
+        hotTags: []
       };
     },
     components: {},
@@ -85,6 +92,13 @@
           .catch((result) => {
             console.log(result)
           })
+        getHotTags()
+        .then(response => {
+          this.hotTags = response.data
+        })
+        .catch(result => {
+          console.log(result)
+        })
       },
       padLeftZero(str) {
         return ('00' + str).substr(str.length);
@@ -122,7 +136,23 @@
       toDetail(question){
 
       },
-
+      strToTags(str){
+        if ((typeof str) !== "undefined"){
+          str = str.toString()
+          str = str.replace(/[\uff0c]/g,",")
+          let hotTags = (str || '').split(",")
+          hotTags = hotTags.splice(0, hotTags.length - 1)
+          function unique(hotTags){
+            return [...new Set(hotTags)]
+          }
+          return unique(hotTags);
+        }
+        return null
+      },
+      clickTag(tagContent){
+        this.$store.state.searchContent = tagContent
+        this.pageHandler(1)
+      }
     },
     created() {
       this.pageHandler(1)
@@ -153,6 +183,19 @@
     float: left;
     margin-top: 10px;
     margin-bottom: 5px;
+  }
+  .tag{
+    text-decoration-line: none;
+    cursor: pointer;
+    display: inline-block;
+    height: 20px;
+    line-height: 16px;
+    padding: 2px 5px;
+    background-color: #99cfff;
+    font-size: 12px;
+    color: #fff !important;
+    border-radius: 4px;
+    margin: 4px;
   }
   ul{
     padding-top: 5px;

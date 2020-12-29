@@ -20,7 +20,8 @@
               <span @click="clickTag(tag)">{{tag}}</span>
             </span>
           </p>
-          <el-divider content-position="left"></el-divider>
+          <!--v-if="this.currentQuestion.user.id === this.$session.get('user').id"-->
+          <el-divider  content-position="left"></el-divider>
           <router-link style="color: #606266;" :to="{name:'Publish', params: {id:this.currentQuestion.id}}" >
             <div @click="toQuestionEdit" class="edit">
               <i class="el-icon-edit"></i>编辑
