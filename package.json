@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
+    "editor.md": "^1.5.0",
     "element-ui": "^2.14.1",
     "jquery": "^3.5.1",
     "popper.js": "^1.16.1",

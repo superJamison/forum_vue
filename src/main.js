@@ -16,6 +16,9 @@ import VueSession from 'vue-session'
 import VueCookies from 'vue-cookies'
 import VueIconFont from 'vue-icon-font'
 import './assets/iconfont/iconfont.js';
+import 'editor.md/css/editormd.css'
+import 'editor.md/editormd.js'
+
 
 Vue.use(ElementUI);
 Vue.use(VueAxios, axios);

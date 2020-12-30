@@ -106,6 +106,12 @@
                       type: 'success',
                       message: response.data.message
                     });
+                    this.question = {
+                      title: '',
+                      description: '',
+                      tag: '',
+                      creator: -1
+                    }
                   }else {
                     this.$message({
                       type: 'error',
