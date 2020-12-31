@@ -1,28 +1,34 @@
 <template>
   <div class="container-fluid detail">
     <div class="row" style="border: 50px solid #efefef;">
-      <div class="main col-lg-9 col-md-12 col-sm-12" >
-        <div class="main-top" >
+      <div class="main col-lg-9 col-md-12 col-sm-12">
+        <div class="main-top">
           <div id="fund">
             <div style="float: left;">{{this.currentQuestion.title}}</div>
             <br>
-            <p class="authorAndTime">作者：{{this.currentQuestion.user.username}} | 发布时间：{{formatDateFilter(this.currentQuestion.gmtCreate)}} |
+            <p class="authorAndTime">作者：{{this.currentQuestion.user.username}} |
+              发布时间：{{formatDateFilter(this.currentQuestion.gmtCreate)}} |
               阅读数： {{this.currentQuestion.viewCount}}</p>
           </div>
           <div class="line" style="margin-bottom: 45px;"></div>
         </div>
-        <div class="main-content" >
-          <div  class="descript">{{currentQuestion.description}}</div>
-          <div style="height: 280px"></div>
+        <div class="main-content">
+          <div v-html="currentQuestion.description" v-highlight style="width:96%;margin-bottom:50px;padding-left: 40px;"
+               class="markdown-body descript"></div>
+          <div style="height: 50px"></div>
           <el-divider content-position="left"></el-divider>
           <p>
             <span class="tag" v-for="tag in strToTags(this.currentQuestion.tag)">
               <span @click="clickTag(tag)">{{tag}}</span>
             </span>
           </p>
-          <!--v-if="this.currentQuestion.user.id === this.$session.get('user').id"-->
-          <el-divider  content-position="left"></el-divider>
-          <router-link style="color: #606266;" :to="{name:'Publish', params: {id:this.currentQuestion.id}}" >
+
+          <el-divider
+            v-if="(typeof this.$session.get('user')) !== 'undefined' && this.currentQuestion.user.id === this.$session.get('user').id"
+            content-position="left"></el-divider>
+          <router-link
+            v-if="(typeof this.$session.get('user')) !== 'undefined' && this.currentQuestion.user.id === this.$session.get('user').id"
+            style="color: #606266;" :to="{name:'Publish', params: {id:this.currentQuestion.id}}">
             <div @click="toQuestionEdit" class="edit">
               <i class="el-icon-edit"></i>编辑
             </div>
@@ -34,33 +40,33 @@
           <ul class="allReply">
             <li class="replyList" v-for="(reply, index) in allReply">
               <div class="left">
-                <el-avatar :size="50" >
+                <el-avatar :size="50">
                   <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
                 </el-avatar>
                 <span class="reply">{{reply.comment.content}}</span>
               </div>
-              <p class="star" >
+              <p class="star">
                 <span style="cursor: pointer" @click="like(reply.comment.id)">
-                  <icon  name="icon-test" :id="'like-'+reply.comment.id"></icon>
+                  <icon name="icon-test" :id="'like-'+reply.comment.id"></icon>
                 </span>
                 <span style="cursor: pointer" @click="subReply(reply.comment.id)">
-                  <icon class="commentBtn" :id="'commentBtn'+reply.comment.id" name="entypocomment" ></icon>
+                  <icon class="commentBtn" :id="'commentBtn'+reply.comment.id" name="entypocomment"></icon>
                   <span>{{reply.children.length}}</span>
                 </span>
                 <span class="reply_time">{{formatDateFilter(reply.comment.gmtCreate)}}</span>
               </p>
-              <div class="line"  style="position:relative;top: -28px"></div>
+              <div class="line" style="position:relative;top: -28px"></div>
               <ul style="list-style: none;" v-show="false" :id="'subReply-'+reply.comment.id">
                 <li v-for="childrenReply in reply.children">
                   <div class="left">
-                    <el-avatar :size="50" >
+                    <el-avatar :size="50">
                       <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
                     </el-avatar>
                     <span class="reply">{{childrenReply.content}}</span>
                   </div>
                   <p class="star">
                     <span style="cursor: pointer" @click="like(childrenReply.id)">
-                      <icon  name="icon-test" :id="'like-'+childrenReply.id"></icon>
+                      <icon name="icon-test" :id="'like-'+childrenReply.id"></icon>
                     </span>
                     <span class="reply_time">{{formatDateFilter(childrenReply.gmtCreate)}}</span>
                   </p>
@@ -84,18 +90,18 @@
           <div>
             <div class="reply_user">
               <el-avatar :size="50">
-                <img  class="reply_user_img" src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
+                <img class="reply_user_img" src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
               </el-avatar>
               <span class="reply_user_name">匿名用户</span>
             </div>
-            <el-input v-model="replyComment" class="reply_form" type="textarea" :rows="5" ></el-input>
+            <el-input v-model="replyComment" class="reply_form" type="textarea" :rows="5"></el-input>
           </div>
           <div class="reply_btn">
             <el-button type="primary" @click="replyCommentSubmit">回复</el-button>
           </div>
         </div>
       </div>
-      <div class="col-lg-3 col-md-12 col-sm-12" style="font-size: 13px;padding: 20px" >
+      <div class="col-lg-3 col-md-12 col-sm-12" style="font-size: 13px;padding: 20px">
         <h3>问题发起指南</h3>
         • 问题标题: 请用精简的语言描述您发布的问题，不超过25字 <br>
         • 问题补充: 详细补充您的问题内容，并确保问题描述清晰直观, 并提供一些相关的资料： <br>
@@ -107,16 +113,23 @@
 </template>
 
 <script>
+  import marked from 'marked'
   import $ from 'jquery'
-  import {addViewCount,
+  import {
+    addViewCount,
     getQuestionById,
     addComment,
     getReplyById,
-    addLikeCount} from '../api'
+    addLikeCount
+  } from '../api'
+  // 引入样式
+  import 'highlight.js/styles/atelier-cave-light.css'
+  import 'highlightjs-line-numbers.js'
+
   export default {
     name: 'QuestionDetail',
-    inject:['reload'],
-    data(){
+    inject: ['reload'],
+    data () {
       return {
         currentQuestion: {
           user: {
@@ -131,36 +144,37 @@
       }
     },
     methods: {
-      getQuestion(){
+      getQuestion () {
         getQuestionById(this.getQuestionId())
           .then(response => {
             this.currentQuestion = response.data
+            this.currentQuestion.description = marked(response.data.description)
           })
           .catch(result => {
             console.log(result)
           })
         getReplyById(this.getQuestionId())
-        .then(response => {
-          this.allReply = response.data
-          for (let i = 0; i < this.allReply.length; i++){
-            this.subReplyContent.push({content: ""})
-          }
-        })
-        .catch(result => {
-          console.log(result)
-        })
+          .then(response => {
+            this.allReply = response.data
+            for (let i = 0; i < this.allReply.length; i++) {
+              this.subReplyContent.push({content: ''})
+            }
+          })
+          .catch(result => {
+            console.log(result)
+          })
       },
-      getQuestionId(){
+      getQuestionId () {
         // 获取传过来的参数
-        let questionId = decodeURIComponent(this.$route.params.id);
+        let questionId = decodeURIComponent(this.$route.params.id)
         return JSON.parse(questionId)
       },
-      padLeftZero(str) {
-        return ('00' + str).substr(str.length);
+      padLeftZero (str) {
+        return ('00' + str).substr(str.length)
       },
-      formatDate(date, fmt) {
+      formatDate (date, fmt) {
         if (/(y+)/.test(fmt)) {
-          fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+          fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
         }
         let o = {
           'M+': date.getMonth() + 1,
@@ -168,64 +182,78 @@
           'h+': date.getHours(),
           'm+': date.getMinutes(),
           's+': date.getSeconds()
-        };
+        }
         for (let k in o) {
           if (new RegExp(`(${k})`).test(fmt)) {
-            let str = o[k] + '';
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : this.padLeftZero(str));
+            let str = o[k] + ''
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? str : this.padLeftZero(str))
           }
         }
-        return fmt;
+        return fmt
       },
-      formatDateFilter(time) {
-        let date = new Date(time);
-        return this.formatDate(date, 'yyyy-MM-dd hh:mm');
+      formatDateFilter (time) {
+        let date = new Date(time)
+        return this.formatDate(date, 'yyyy-MM-dd hh:mm')
       },
-      toQuestionEdit(){
+      toQuestionEdit () {
         this.$router.replace('/publish')
       },
-      strToTags(str){
-        if ((typeof str) !== "undefined"){
-          str = str.replace(/[\uff0c]/g,",")
-          return (str || '').split(",");
+      strToTags (str) {
+        if ((typeof str) !== 'undefined') {
+          str = str.replace(/[\uff0c]/g, ',')
+          return (str || '').split(',')
         }
         return null
       },
-      beforeunloadFn(){
+      beforeunloadFn () {
         addViewCount(this.getQuestionId())
       },
-      replyCommentSubmit(){
-        addComment(1,this.currentQuestion.id, this.replyComment)
-        .then(response => {
-          if (!response.data.success){
-            alert(response.data.message)
-          }else {
-            this.replyComment = ''
-            this.reload()
-          }
-        })
-        .catch(result => {
-          console.log(result)
-        })
+      replyCommentSubmit () {
+        if (this.replyComment === '' || this.replyComment === null) {
+          this.$message({
+            type: 'error',
+            message: '请填写评论内容!'
+          })
+          return
+        }
+        addComment(1, this.currentQuestion.id, this.replyComment)
+          .then(response => {
+            if (!response.data.success) {
+              alert(response.data.message)
+            } else {
+              this.replyComment = ''
+              this.reload()
+            }
+          })
+          .catch(result => {
+            console.log(result)
+          })
 
       },
       //展开二级评论
-      subReply(id){
+      subReply (id) {
         $('#subReply-' + id).toggle()
-        if($('#subReply-' + id).is(":hidden")){
+        if ($('#subReply-' + id).is(':hidden')) {
           //隐藏
-          $("#commentBtn"+id).css("color","#333")
-        }else{
+          $('#commentBtn' + id).css('color', '#333')
+        } else {
           //打开
-          $("#commentBtn"+id).css("color","#499ef3")
+          $('#commentBtn' + id).css('color', '#499ef3')
         }
       },
-      subCommentBtn(questionId, index){
-        addComment(2,questionId, this.subReplyContent[index].content)
+      subCommentBtn (questionId, index) {
+        if (this.subReplyContent[index].content === '' || this.subReplyContent[index].content === null) {
+          this.$message({
+            type: 'error',
+            message: '请填写评论内容!'
+          })
+          return
+        }
+        addComment(2, questionId, this.subReplyContent[index].content)
           .then(response => {
-            if (!response.data.success){
+            if (!response.data.success) {
               alert(response.data.message)
-            }else {
+            } else {
               this.subReplyContent[index].content = ''
               this.reload()
             }
@@ -235,24 +263,24 @@
           })
 
       },
-      like(commentId){ //点赞
+      like (commentId) { //点赞
         addLikeCount(commentId)
-        .then(response => {
-          console.log(response.data)
-          if (response.data.success){
-            console.log($('#like-' + commentId))
-            $("#like-"+commentId).addClass("likeActive")
-          }else {
-            alert(response.data.message)
-          }
-        })
-        .catch(result => {
-          console.log(result)
-        })
+          .then(response => {
+            console.log(response.data)
+            if (response.data.success) {
+              console.log($('#like-' + commentId))
+              $('#like-' + commentId).addClass('likeActive')
+            } else {
+              alert(response.data.message)
+            }
+          })
+          .catch(result => {
+            console.log(result)
+          })
       },
-      clickTag(tagContent){
+      clickTag (tagContent) {
         this.$store.state.searchContent = tagContent
-        this.$router.replace({path: '/'});
+        this.$router.replace({path: '/'})
       }
     },
     created () {
@@ -261,40 +289,52 @@
     },
     watch: {
       $route: {
-        handler: function(val, oldVal){
+        handler: function (val, oldVal) {
           this.oldRouterPath = oldVal.path
           this.newRouterPath = val.path
         },
         // 深度观察监听
         deep: true
       }
+    },
+    mounted () {
+      //绑定markdown样式
+      const link = document.createElement('link')
+      link.type = 'text/css'
+      link.rel = 'stylesheet'
+      link.href = 'https://cdn.bootcss.com/github-markdown-css/2.10.0/github-markdown.min.css'
+      document.head.appendChild(link)
     }
   }
 </script>
 
 <style scoped>
-  .main{
+  .main {
     border-right: 1px solid #cccccc;
     padding: 20px;
     box-sizing: border-box;
   }
-  .main-top{
+
+  .main-top {
     width: 100%;
     padding-bottom: 10px;
   }
-  #fund{
+
+  #fund {
     width: 100%;
     font-size: 20px;
     font-weight: bold;
   }
-  .line{
+
+  .line {
     width: 100%;
     height: .5px;
     background-color: #cccccc;
     float: left;
     margin: 1px 0 1px 0;
   }
-  .tag{
+
+  .tag {
     text-decoration-line: none;
     cursor: pointer;
     display: inline-block;
@@ -307,10 +347,12 @@
     border-radius: 4px;
     margin: 4px;
   }
-  .question:first-child{
+
+  .question:first-child {
     margin-top: 25px;
   }
-  .main-content{
+
+  .main-content {
     width: 100%;
 
   }
@@ -318,31 +360,38 @@
   .el-form {
     text-align: left;
   }
-  .detail{
+
+  .detail {
     text-align: left;
   }
-  .authorAndTime{
+
+  .authorAndTime {
     font-size: 13px;
     font-weight: normal;
     margin-top: 10px;
     color: #999;
   }
-  .descript{
+
+  .descript {
     font-size: 14px;
   }
-  .edit{
+
+  .edit {
     font-size: 13px;
     color: #999999;
     cursor: pointer;
   }
-  .edit:hover{
+
+  .edit:hover {
     color: #4444e2;
   }
-  .allReply{
+
+  .allReply {
     list-style: none;
     margin-left: 15px;
   }
-  .reply{
+
+  .reply {
     line-height: 50px;
     height: 50px;
     position: relative;
@@ -350,7 +399,8 @@
     left: 10px;
     display: inline-block;
   }
-  .reply_user .reply_user_name{
+
+  .reply_user .reply_user_name {
     line-height: 50px;
     height: 50px;
     position: relative;
@@ -358,30 +408,50 @@
     left: 10px;
     display: inline-block;
   }
-  .star{
+
+  .star {
     margin-left: 60px;
     position: relative;
     top: -14px;
   }
-  .reply_time{
+
+  .reply_time {
     float: right;
     color: #999999;
     font-size: 14px;
   }
-  .reply_btn{
+
+  .reply_btn {
     float: right;
     margin-top: 15px;
   }
-  .commentBtn:hover{
+
+  .commentBtn:hover {
     color: #499ef3;
   }
-  .subCommentBtn{
+
+  .subCommentBtn {
     position: relative;
     left: 87%;
     top: 15px;
     margin-bottom: 29px;
   }
-  .likeActive{
+
+  .likeActive {
     color: red;
+  }
+
+  .hljs-line-numbers {
+    text-align: right;
+    border-right: 1px solid #ccc !important;
+    margin-right: 10px !important;
+    padding-right: 5px !important;
+    color: #999;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 </style>

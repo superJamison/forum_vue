@@ -35,6 +35,7 @@
             </li>
           </ul>
           <!--分页-->
+
           <zpagenav :page="page" :page-size="pageSize" :total="total"
                     :max-link="maxPage" :page-handler="pageHandler"></zpagenav>
         </div>
@@ -61,10 +62,10 @@
       return {
         input: '',
         questionList: [],
-        page: 1,
-        pageSize: 5,
-        total: 0,
-        maxPage: 9,
+        page: 1, //当前页
+        pageSize: 5, // 一页有多少条数据
+        total: 0, // 数据总量
+        maxPage: 9, // 最大的页数
         searchContent: this.$store.state.searchContent,
         user: {},
         hotTags: []
@@ -87,7 +88,6 @@
             }
             this.total = response.data.total
             this.$store.state.searchContent = ''
-
           })
           .catch((result) => {
             console.log(result)

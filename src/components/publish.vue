@@ -15,7 +15,17 @@
               <el-input v-model="question.title"></el-input>
             </el-form-item>
             <el-form-item label="问题补充（必填）:" prop="description">
-              <el-input type="textarea" :rows="4" v-model="question.description"></el-input>
+              <ele-form
+                v-model="formData"
+                :form-desc="formDesc"
+                :is-show-submit-btn="false"
+                :is-show-back-btn="false"
+                :request-fn="handleRequest"
+                :span="22"
+                @request-success="handleSuccess"
+                class="editor"
+              />
+<!--              <el-input type="textarea" :rows="4" v-model="question.description"></el-input>-->
             </el-form-item>
             <el-form-item label="添加标签（逗号隔开）:" prop="tag">
               <el-input v-model="question.tag"></el-input>
@@ -44,6 +54,9 @@
   import {addQuestion, getQuestionById, updateQuestion} from './../api/index'
   export default {
     name: 'Publish',
+    props: {
+
+    },
     data(){
       return {
         labelPosition: 'top',
@@ -64,11 +77,29 @@
             {required: true, message: '请填入标签，标签不能为空！并且标签以逗号隔开', trigger: 'blur'}
           ]
         },
-        isUpdate: false
+        isUpdate: false,
+        formData: {
+          content: ''
+        },
+        formDesc: {
+          content: {
+            label: '',
+            type: 'markdown-editor',
+            attrs: {
+              action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+              responseFn (response, file) {
+                // 因为是 mock 地址, 所以, 总是返回同一张图片的URL, 自己项目使用, 不会
+                return response.url
+              }
+            },
+
+          }
+        }
       }
     },
     methods: {
       submitForm(question) {
+        this.question.description = this.formData.content
         if (this.isUpdate){
           //更新
           this.$refs[question].validate((valid) => {
@@ -112,6 +143,7 @@
                       tag: '',
                       creator: -1
                     }
+                    this.formData.content = ''
                   }else {
                     this.$message({
                       type: 'error',
@@ -140,6 +172,7 @@
           getQuestionById(questionId)
             .then(response => {
               this.question = response.data
+              this.formData.content = this.question.description
             })
             .catch(result => {
               console.log(result)
@@ -149,6 +182,13 @@
           this.isUpdate = false
         }
       },
+      handleRequest (data) {
+        console.log(data)
+        return Promise.resolve()
+      },
+      handleSuccess () {
+        this.$message.success('提交成功')
+      }
     },
     created () {
       this.getQuestion()
@@ -187,5 +227,8 @@
 
   .el-form {
     text-align: left;
+  }
+  .editor{
+    width: 142%;
   }
 </style>

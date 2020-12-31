@@ -27,8 +27,6 @@
           </div>
         </table>
       </form>
-
-
     </div>
   </div>
 </template>
@@ -40,7 +38,7 @@
     data() {
       return {
         username: 'jamison',
-        password: '1234',
+        password: '123456',
         validation: '',
         imgUrl: ''
       }

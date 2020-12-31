@@ -112,8 +112,6 @@
     },
     methods: {
       add () {
-        console.log(!/^[1][3,4,5,7,8][0-9]{9}$/.test(this.user.telephone))
-        console.log(!/^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/.test(this.user.email))
         if (this.user.username === null || this.user.username === ''){
           this.$message({
             type: 'error',
@@ -151,7 +149,6 @@
         }
         add(this.user)
           .then(response => {
-            console.log(response.data)
             if (response.data.success){
               this.$message({
                 type: 'success',
