@@ -124,7 +124,7 @@
   } from '../api'
   // 引入样式
   import 'highlight.js/styles/atelier-cave-light.css'
-  import 'highlightjs-line-numbers.js'
+  // import 'highlightjs-line-numbers.js'
 
   export default {
     name: 'QuestionDetail',

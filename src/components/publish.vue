@@ -24,6 +24,7 @@
                 :span="22"
                 @request-success="handleSuccess"
                 class="editor"
+                prop="description"
               />
 <!--              <el-input type="textarea" :rows="4" v-model="question.description"></el-input>-->
             </el-form-item>
@@ -162,6 +163,7 @@
 
       },
       resetForm(question) {
+        this.formData.content = ''
         this.$refs[question].resetFields();
       },
       getQuestion(){

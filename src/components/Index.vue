@@ -82,7 +82,6 @@
         getIndexPage(page, this.pageSize, this.$store.state.searchContent)
           .then((response) => {
             this.questionList = response.data.data
-            console.log(this.questionList)
             for (let i = 0; i < this.questionList.length; i++) {
               this.questionList[i].description = this.stringToShorter(this.questionList[i].description);
             }

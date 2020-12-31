@@ -34,6 +34,7 @@
 
 <script>
 import Footer from './../components/Footer'
+import {getUserByToken} from './../api/index'
   export default {
   name: "Home",
     provide(){
@@ -60,6 +61,20 @@ import Footer from './../components/Footer'
         this.$store.state.isLogin = true
         this.$store.state.username = user.username
         this.$store.state.id = user.id
+      }
+      let token = this.$cookies.get("token")
+      if (token !== 'null' && token !== ''){
+        getUserByToken(token)
+        .then(response => {
+          this.$store.state.isLogin = true
+          this.$store.state.username = response.data.user.username
+          this.$store.state.userId = response.data.user.id
+          //设置session
+          this.$session.set("user", response.data.user)
+        })
+        .catch(result => {
+          console.log(result)
+        })
       }
     },
     logout(){

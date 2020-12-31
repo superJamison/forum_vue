@@ -21,6 +21,11 @@ export const login = (username, password, validation) => {
   return axios.post("/forum/user/login?validation="+validation, Qs.stringify({username: username, password: password}))
 }
 
+//根据token获取user
+export const getUserByToken = (token) => {
+  return axios.post("/forum/user/getUserByToken", Qs.stringify({token: token}))
+}
+
 //添加问题
 export const addQuestion = (question) => {
   return axios.post("/forum/question/addQuestion", Qs.stringify(question))
